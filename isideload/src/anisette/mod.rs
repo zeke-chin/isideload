@@ -30,6 +30,27 @@ pub struct AnisetteData {
 
 // Some headers don't seem to be required. I guess not including them is technically more efficient soooo
 impl AnisetteData {
+    /// Builds anisette data from headers produced by a provider outside this
+    /// crate (e.g. one running an ADI implementation in-process).
+    pub fn new(
+        machine_id: String,
+        one_time_password: String,
+        routing_info: String,
+        device_description: String,
+        device_unique_identifier: String,
+        local_user_id: String,
+    ) -> Self {
+        AnisetteData {
+            machine_id,
+            one_time_password,
+            routing_info,
+            _device_description: device_description,
+            device_unique_identifier,
+            _local_user_id: local_user_id,
+            generated_at: SystemTime::now(),
+        }
+    }
+
     pub fn get_headers(&self) -> HashMap<String, String> {
         //let dt: DateTime<Utc> = Utc::now().round_subsecs(0);
 
