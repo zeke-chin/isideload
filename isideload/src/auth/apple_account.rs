@@ -919,6 +919,16 @@ impl AppleAccount {
     }
 
     pub async fn get_app_token(&mut self, app: &str) -> Result<AppToken, Report> {
+        self.get_app_token_with_headers(app, None).await
+    }
+
+    /// Like `get_app_token`, with headers that replace the defaults for this
+    /// one request (e.g. a different `X-Mme-Client-Info`).
+    pub async fn get_app_token_with_headers(
+        &mut self,
+        app: &str,
+        headers: Option<reqwest::header::HeaderMap>,
+    ) -> Result<AppToken, Report> {
         let app = if app.contains("com.apple.gs.") {
             app.to_string()
         } else {
@@ -973,7 +983,7 @@ impl AppleAccount {
 
         let resp = self
             .grandslam_client
-            .plist_request(&gs_service_url, &request, None, self.err_429_retries)
+            .plist_request(&gs_service_url, &request, headers, self.err_429_retries)
             .await
             .context("Failed to send app token request")?
             .check_grandslam_error()
